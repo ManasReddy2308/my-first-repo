@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Levaku Sai Manas Reddy — Portfolio</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Icon -->
+  <script src="https://kit.fontawesome.com/a2d9b1f6a2.js" crossorigin="anonymous"></script>
+
+  <!-- Three.js for the deep interactive background -->
+  <script src="https://unpkg.com/three@0.154.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- GSAP for buttery animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#060818; --glass: rgba(255,255,255,0.06); --accent:#7C5CFF; --muted:#9aa4bf;
+      --card: rgba(255,255,255,0.03);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#030315 0%,#0b0f1b 100%);color:#eaf0ff}
+
+    /* full-screen animated canvas */
+    #bg-canvas{position:fixed;inset:0;z-index:0}
+
+    /* site container */
+    .site{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:40px 24px}
+
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo .mark{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#00D4FF);display:flex;align-items:center;justify-content:center;font-weight:800;color:#061025}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;margin-top:28px}
+    .hero .intro{backdrop-filter: blur(8px);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:36px;border-radius:18px;box-shadow:0 6px 40px rgba(6,8,24,0.7)}
+    h1{font-size:36px;margin:0 0 6px}
+    .sub{color:var(--muted);margin-bottom:14px}
+    .roles{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{background:var(--card);padding:8px 12px;border-radius:999px;font-size:13px;color:var(--muted)}
+
+    .cta{margin-top:18px;display:flex;gap:12px}
+    .btn{padding:12px 16px;border-radius:12px;border:0;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#00D4FF);color:#051025}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    /* profile card */
+    .profile{padding:18px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;flex-direction:column;gap:10px;align-items:center}
+    .avatar{width:180px;height:180px;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.7);border:2px solid rgba(255,255,255,0.04)}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .meta{display:flex;flex-direction:column;align-items:center}
+    .meta h3{margin:8px 0 2px}
+    .meta p{color:var(--muted);margin:0;font-size:14px}
+
+    /* sections */
+    section{margin-top:36px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+
+    .projects .project{display:flex;gap:12px;align-items:center}
+    .project .thumb{width:86px;height:66px;border-radius:10px;overflow:hidden}
+    .project h4{margin:0 0 6px}
+    .project p{margin:0;color:var(--muted);font-size:13px}
+
+    footer{margin:56px 0 18px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* subtle floating shapes */
+    .float-blob{position:absolute;filter:blur(40px);opacity:.18;z-index:1;border-radius:50%}
+    .blob-a{width:320px;height:320px;background:linear-gradient(135deg,#7C5CFF55,#00D4FF55);right:6%;top:6%}
+    .blob-b{width:220px;height:220px;background:linear-gradient(135deg,#FF6B6B22,#FFD36B22);left:3%;bottom:8%}
+
+    /* responsive */
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .profile{order:-1}
+      header{gap:10px}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="float-blob blob-a"></div>
+  <div class="float-blob blob-b"></div>
+
+  <div class="site">
+    <header>
+      <div class="logo">
+        <div class="mark">LM</div>
+        <div>
+          <div style="font-weight:800">Levaku Sai Manas</div>
+          <div style="font-size:12px;color:var(--muted)">Web Developer · Intern hopeful</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="intro">
+          <h1>Hello, I'm <span style="background:linear-gradient(90deg,var(--accent),#00D4FF);-webkit-background-clip:text;color:transparent;">Manas</span></h1>
+          <div class="sub">Motivated web developer building secure, responsive apps. (B.E. CSE — SIMATS) — Open to internships.</div>
+
+          <div class="roles">
+            <div class="chip">React</div>
+            <div class="chip">Node.js</div>
+            <div class="chip">PHP</div>
+            <div class="chip">MongoDB</div>
+            <div class="chip">Chart.js & Plotly</div>
+          </div>
+
+          <div class="cta">
+            <button class="btn btn-primary" id="downloadResume">Download Resume</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Hire me</button>
+          </div>
+
+          <div style="margin-top:18px;color:var(--muted);font-size:13px">Featured: <strong>PACEBANK</strong> • <em>Cloud IT Solutions</em> • <em>Excel Analytics Platform</em></div>
+        </div>
+
+        <aside class="profile card">
+          <div class="avatar">
+            <!-- random portrait image placeholder -->
+            <img src="https://source.unsplash.com/random/600x600/?portrait" alt="Random portrait">
+          </div>
+          <div class="meta">
+            <h3>Levaku Sai Manas Reddy</h3>
+            <p>Frontend · Backend · Data Visualisation</p>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <a class="btn btn-ghost" href="https://github.com/ManasReddy2308" target="_blank"><i class="fa-brands fa-github"></i>&nbsp;GitHub</a>
+            <a class="btn btn-ghost" href="mailto:manasreddylevaku@gmail.com"><i class="fa-solid fa-envelope"></i>&nbsp;Email</a>
+          </div>
+        </aside>
+      </section>
+
+      <section id="about">
+        <div class="card">
+          <h2>About</h2>
+          <p style="color:var(--muted);line-height:1.6">Motivated and detail-oriented web developer with a strong foundation in front-end and back-end technologies. Currently seeking internship opportunities to apply and expand my skills in real-world projects. Passionate about building responsive, user-friendly websites and continuously improving through hands-on experience and learning.</p>
+          <p style="color:var(--muted)"><small>Resume source: Levaku Sai Manas Reddy — (parsed from uploaded resume).</small></p>
+        </div>
+      </section>
+
+      <section id="projects" class="projects">
+        <h2>Selected Projects</h2>
+        <div class="cards">
+          <div class="card project">
+            <div style="flex:1">
+              <h4>PACEBANK</h4>
+              <p>Secure online banking system with role-based dashboards, OTP email verification, deployed prototype.</p>
+            </div>
+            <div class="thumb"><img src="https://source.unsplash.com/collection/190727/200x120" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>
+          </div>
+
+          <div class="card project">
+            <div style="flex:1">
+              <h4>Cloud IT Solutions — Insurance WebApp</h4>
+              <p>Responsive signup flows, PHP & MySQL backend, unique ID generation and validation.</p>
+            </div>
+            <div class="thumb"><img src="https://source.unsplash.com/collection/190728/200x120" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>
+          </div>
+
+          <div class="card project">
+            <div style="flex:1">
+              <h4>Excel Analytics Platform</h4>
+              <p>Upload Excel/CSV, parse with Multer & XLSX, generate 2D & 3D charts (Chart.js, Plotly).</p>
+            </div>
+            <div class="thumb"><img src="https://source.unsplash.com/collection/190726/200x120" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills">
+        <h2>Skills & Tools</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>Languages & Frameworks</h3>
+            <p class="sub">React.js · Node.js · Express · PHP · HTML5 · CSS3 · SQL · MongoDB</p>
+          </div>
+          <div class="card">
+            <h3>Tools</h3>
+            <p class="sub">VS Code · Git · Postman · MySQL Workbench · Chart.js · Plotly</p>
+          </div>
+          <div class="card">
+            <h3>Achievements</h3>
+            <p class="sub">Best Poster Award — Tech Star Summit 2025</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact">
+        <h2>Contact</h2>
+        <div class="cards">
+          <div class="card">
+            <h4>Email</h4>
+            <p class="sub">manasreddylevaku@gmail.com</p>
+          </div>
+          <div class="card">
+            <h4>Phone</h4>
+            <p class="sub">+91 93983 55713</p>
+          </div>
+          <div class="card">
+            <h4>Resume</h4>
+            <p class="sub">Click the button above to download the full resume (PDF).</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      Built with ❤ · Inspired design · Interactive 3D background
+    </footer>
+  </div>
+
+  <script>
+    // ---------- tiny helpers ----------
+    const $ = s => document.querySelector(s);
+
+    // Download resume (uses the uploaded resume if you host it locally). Fallback: opens GitHub link
+    $('#downloadResume').addEventListener('click', ()=>{
+      // If you host the resume as 'resume.pdf' in same folder, it will download. Otherwise opens GitHub.
+      const link = document.createElement('a');
+      link.href = 'manas_resume.pdf';
+      link.download = 'Levaku_Sai_Manas_Reddy_Resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      // fallback message
+      setTimeout(()=>{
+        try{ if(!navigator.onLine) throw 0; }catch(e){ window.open('https://github.com/ManasReddy2308','_blank') }
+      },600);
+    });
+
+    // Simple entrance animations with GSAP
+    gsap.from('.mark', {y:-20, opacity:0, duration:0.8});
+    gsap.from('header nav a', {x:10, opacity:0, duration:0.9, stagger:0.08});
+    gsap.from('.intro h1', {y:18, opacity:0, duration:0.9});
+    gsap.from('.profile', {x:40, opacity:0, duration:1});
+
+    // Typing effect for subtitle
+    const sub = document.querySelector('.sub');
+    const phrases = ['Motivated web developer building secure, responsive apps.','B.E. CSE — SIMATS (8.8 CGPA)','Open to internships & collaborations'];
+    let idx = 0, char = 0, forward = true;
+    function tick(){
+      const p = phrases[idx];
+      if(forward){ char++; if(char>p.length){forward=false; setTimeout(tick,1200); return}} else {char--; if(char===0){forward=true; idx=(idx+1)%phrases.length}}
+      sub.textContent = p.slice(0,char);
+      setTimeout(tick, forward?60:30);
+    }
+    tick();
+
+    // ---------- three.js background ----------
+    const canvas = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 1000);
+    camera.position.set(0,0,45);
+
+    // subtle icosahedron with colorful shader-like material
+    const geometry = new THREE.IcosahedronGeometry(12, 4);
+    const mat = new THREE.MeshStandardMaterial({
+      color:0xffffff, metalness:0.2, roughness:0.4, transparent:true, opacity:0.12, emissive:0x7C5CFF, emissiveIntensity:0.6
+    });
+    const mesh = new THREE.Mesh(geometry, mat);
+    scene.add(mesh);
+
+    // colorful orbiting particles
+    const pts = new THREE.BufferGeometry();
+    const count = 1200;
+    const positions = new Float32Array(count*3);
+    for(let i=0;i<count;i++){
+      const r = 30 + Math.random()*80;
+      const theta = Math.random()*Math.PI*2;
+      const phi = Math.acos(2*Math.random()-1);
+      positions[i*3] = r*Math.sin(phi)*Math.cos(theta);
+      positions[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+      positions[i*3+2] = r*Math.cos(phi);
+    }
+    pts.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    const pmat = new THREE.PointsMaterial({size:0.6, transparent:true, opacity:0.5});
+    const points = new THREE.Points(pts, pmat);
+    scene.add(points);
+
+    // lights
+    const lightA = new THREE.PointLight(0x7C5CFF, 1.4); lightA.position.set(30,30,50); scene.add(lightA);
+    const lightB = new THREE.PointLight(0x00D4FF, 0.8); lightB.position.set(-40,-20,30); scene.add(lightB);
+    const amb = new THREE.AmbientLight(0x111827, 0.8); scene.add(amb);
+
+    function onResize(){
+      camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
+    }
+    addEventListener('resize', onResize);
+    onResize();
+
+    let t = 0;
+    function animate(){
+      t += 0.005;
+      mesh.rotation.x += 0.002; mesh.rotation.y += 0.003; mesh.rotation.z += 0.001;
+      points.rotation.y = t*0.3;
+      // orbit camera slowly
+      camera.position.x = Math.sin(t*0.12)*55;
+      camera.position.z = Math.cos(t*0.12)*55;
+      camera.lookAt(0,0,0);
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // subtle parallax on mouse
+    document.addEventListener('mousemove', e=>{
+      const x = (e.clientX/innerWidth - 0.5)*2;
+      const y = (e.clientY/innerHeight - 0.5)*2;
+      gsap.to(mesh.rotation, {x: y*0.15, y: x*0.3, duration:0.9});
+    });
+
+  </script>
+</body>
+</html>
