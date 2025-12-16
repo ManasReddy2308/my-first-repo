@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import express from 'express';
 
 const app = express();
@@ -59,4 +60,44 @@ app.post('/api/users', (req, res) => {
 /* Start server */
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+=======
+import http from "http";
+import moment from "moment";
+
+const server = http.createServer((req, res) => {
+
+    // HOME
+    if (req.url === "/") {
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.end("Welcome to My First Node.js Server");
+    }
+
+    // TIME
+    else if (req.url === "/time") {
+        const now = moment().format("DD-MM-YYYY HH:mm:ss");
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.end(`Current Date & Time: ${now}`);
+    }
+
+    // API (JSON)
+    else if (req.url === "/api") {
+        const data = {
+            status: "success",
+            message: "Hello from API",
+            time: moment().format("YYYY-MM-DD HH:mm:ss")
+        };
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(data));
+    }
+
+    // 404
+    else {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("404 Page Not Found");
+    }
+});
+
+server.listen(3000, () => {
+    console.log("Server running at http://localhost:3000");
+>>>>>>> 2ae5e08b6b8b4c8ce11f43f95f040aea878a314c
 });
