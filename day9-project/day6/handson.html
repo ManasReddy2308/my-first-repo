@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    .completed {
+        text-decoration: line-through;
+        color: gray;
+    }
+</style>
+</head>
+<body>
+
+<h2>To-Do List</h2>
+
+<input type="text" id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add Task</button>
+
+<ul id="taskList"></ul>
+
+<script>
+function addTask() {
+    let taskText = document.getElementById("taskInput").value.trim();
+    if (taskText === "") return;
+
+    let li = document.createElement("li");
+
+    // Task text span
+    let span = document.createElement("span");
+    span.textContent = taskText;
+
+    // Toggle completed on click
+    span.onclick = function () {
+        span.classList.toggle("completed");
+    };
+
+    // Delete button
+    let delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    delBtn.style.marginLeft = "10px";
+    delBtn.onclick = function () {
+        li.remove();
+    };
+
+    li.appendChild(span);
+    li.appendChild(delBtn);
+
+    document.getElementById("taskList").appendChild(li);
+
+    document.getElementById("taskInput").value = "";
+}
+</script>
+
+</body>
+</html>
